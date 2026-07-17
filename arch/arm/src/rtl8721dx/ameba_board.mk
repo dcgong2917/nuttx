@@ -137,6 +137,15 @@ endif
 ifeq ($(CONFIG_AMEBA_UART),y)
 AMEBA_FWLIB_SRCS += $(AMEBA_SOC)/fwlib/ram_common/ameba_uart.c
 endif
+
+# I2C register layer.  Unlike UART, the fwlib I2C API is NOT in ROM: the I2C
+# driver (arch/.../common/ameba/ameba_i2c.c) calls I2C_Init/StructInit/Cmd and
+# I2C_MasterWrite/Read/RepeatRead, all of which are compiled from this RAM
+# source and must be linked in (--gc-sections drops the unused DMA/interrupt
+# helpers).
+ifeq ($(CONFIG_AMEBA_I2C),y)
+AMEBA_FWLIB_SRCS += $(AMEBA_SOC)/fwlib/ram_common/ameba_i2c.c
+endif
 AMEBA_FWLIB_INC  = -mcmse \
                    -I$(TOPDIR)/arch/arm/src/common/ameba/sdk_shim \
                    -I$(AMEBA_SOC)/fwlib/include \
